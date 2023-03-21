@@ -5,10 +5,7 @@ import com.amazonaws.regions.{Region, Regions}
 import Dependencies._
 import SotDependencies._
 
-lazy val scala_2_11 = "2.11.11"
 lazy val scala_2_12 = "2.12.4"
-
-lazy val sbt_0_13_15 = "0.13.15"
 lazy val sbt_1_1_1 = "1.1.1"
 
 lazy val IT = config("it") extend Test
@@ -43,7 +40,6 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       "-language:existentials"/*,
       "-Xlog-implicits"*/
     ),
-    crossScalaVersions := Seq(scala_2_11, scala_2_12),
     s3region := Region.getRegion(Regions.EU_WEST_2),
     publishTo := {
       val prefix = if (isSnapshot.value) "snapshot" else "release"
@@ -56,7 +52,6 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       s3resolver.value("Parallel AI S3 Snapshots resolver", s3("snapshot.repo.parallelai.com")) withMavenPatterns
     ),
     resolvers += sbtResolver.value,
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       scalatest % "test, it",
       mockitoScala % "test, it",
