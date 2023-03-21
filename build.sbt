@@ -24,7 +24,6 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       )
     ),
     scalacOptions ++= Seq(
-      "–verbose",
       "-deprecation",           // Emit warning and location for usages of deprecated APIs.
       "-feature",               // Emit warning and location for usages of features that should be imported explicitly.
       "-unchecked",             // Enable additional warnings where generated code depends on assumptions.
@@ -82,7 +81,6 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       finchSprayJson,
       jsonLenses,
       sprayJsonShapeless,
-      finchOAuth2,
       betterFiles,
       sttp,
       sttpOkhttpBackend,
