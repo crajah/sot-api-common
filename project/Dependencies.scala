@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
   val pureConfigVersion = "0.9.0"
   val twitterBijectionVersion = "0.9.6"
-  val twitterVersion = "18.2.0"
+  val twitterVersion = "18.3.0"
   val finchVersion = "0.17.0"
   val sttpVersion = "1.1.9"
   val gatlingVersion = "2.2.5"

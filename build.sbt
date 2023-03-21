@@ -24,7 +24,6 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       )
     ),
     scalacOptions ++= Seq(
-      "–explaintypes",
       "–optimise",
       "–verbose",
       "-deprecation",           // Emit warning and location for usages of deprecated APIs.
