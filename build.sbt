@@ -38,6 +38,8 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       "-Xlog-implicits"*/
     ),
     s3region := Region.getRegion(Regions.EU_WEST_2),
+    publishArtifact in (Test, packageBin) := true,
+    publishArtifact in (IntegrationTest, packageBin) := true,
     publishTo := {
       val prefix = if (isSnapshot.value) "snapshot" else "release"
       Some(s3resolver.value(s"Parallel AI $prefix S3 bucket", s3(s"$prefix.repo.parallelai.com")) withMavenPatterns)
