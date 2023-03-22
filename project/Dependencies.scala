@@ -8,6 +8,7 @@ object Dependencies {
   val sttpVersion = "1.1.9"
   val gatlingVersion = "2.2.5"
   val monocleVersion = "1.5.0"
+  val circeVersion = "0.9.1"
 
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.4"
   val mockitoScala = "org.markushauck" %% "mockitoscala" % "0.3.0"
@@ -54,4 +55,10 @@ object Dependencies {
   val monocleMacro = "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion
 
   val commonsLang = "org.apache.commons" % "commons-lang3" % "3.7"
+
+  val circe: Seq[ModuleID] = Seq(
+    "io.circe" %% "circe-core",
+    "io.circe" %% "circe-generic",
+    "io.circe" %% "circe-parser"
+  ).map(_ % circeVersion)
 }

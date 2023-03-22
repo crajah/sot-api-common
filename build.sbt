@@ -91,7 +91,7 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       monocleCore,
       monocleMacro,
       commonsLang
-    ),
+    ) ++ circe,
     libraryDependencies ++= Seq(
       sotCommonSecure
     )
