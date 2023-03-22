@@ -5,8 +5,8 @@ import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import spray.json._
 import org.apache.commons.lang3.SerializationUtils.{deserialize, serialize}
-import parallelai.common.secure.{Encrypted, FromBytes, ToBytes}
 import parallelai.common.secure.diffiehellman.ClientPublicKey
+import parallelai.common.secure.{Encrypted, FromBytes, ToBytes}
 
 case class Product(code: String, email: String, token: Encrypted, clientPublicKey: Option[ClientPublicKey] = None)
 

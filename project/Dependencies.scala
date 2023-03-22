@@ -8,7 +8,6 @@ object Dependencies {
   val sttpVersion = "1.1.9"
   val gatlingVersion = "2.2.5"
   val monocleVersion = "1.5.0"
-  val circeVersion = "0.9.1"
 
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.4"
   val mockitoScala = "org.markushauck" %% "mockitoscala" % "0.3.0"
@@ -60,5 +59,5 @@ object Dependencies {
     "io.circe" %% "circe-core",
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser"
-  ).map(_ % circeVersion)
+  ).map(_ % "0.9.1")
 }
