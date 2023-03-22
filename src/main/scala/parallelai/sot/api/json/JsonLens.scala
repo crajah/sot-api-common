@@ -128,7 +128,7 @@ object JsonLens {
 
     /**
       * Return an updated copy of the JSON, removing `name` from objects if the option is empty.
-      * Use [[<<?]] to only apply a non-empty option.
+      * Use <<? to only apply a non-empty option.
       * @param name String
       * @param option Option[T]
       * @tparam T Option of
@@ -160,7 +160,7 @@ object JsonLens {
 
     /**
       * Return an updated copy of the JSON if the option is defined.
-      * Use [[<<]] to remove `name` with empty options.
+      * Use << to remove `name` with empty options.
       * @param name String
       * @param option Option[T]
       * @tparam T Option of
