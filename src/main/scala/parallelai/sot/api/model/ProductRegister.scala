@@ -1,6 +1,5 @@
 package parallelai.sot.api.model
 
-import java.security.KeyPair
 import java.util.Base64._
 import io.circe
 import io.circe.{Decoder, Encoder, HCursor, Json}
@@ -16,14 +15,12 @@ object ProductRegister extends DefaultJsonProtocol {
     jsonFormat3(ProductRegister.apply)
 
   implicit val clientPublicKeyEncoder: Encoder[ClientPublicKey] = (clientPublicKey: ClientPublicKey) => Json.obj(
-    ("value", circe.Json.fromString(getEncoder encodeToString serialize(clientPublicKey.value))),
-    ("keyPair", circe.Json.fromString(getEncoder encodeToString serialize(clientPublicKey.keyPair)))
+    ("value", circe.Json.fromString(getEncoder encodeToString serialize(clientPublicKey.value)))
   )
 
   implicit val clientPublicKeyDecoder: Decoder[ClientPublicKey] = (hCursor: HCursor) => for {
     valueString <- hCursor.downField("value").as[String]
-    keyPairString <- hCursor.downField("keyPair").as[String]
-  } yield ClientPublicKey(getDecoder decode valueString, deserialize(getDecoder decode keyPairString).asInstanceOf[KeyPair])
+  } yield ClientPublicKey(getDecoder decode valueString)
 
   implicit val encoder: Encoder[ProductRegister] =
     Encoder.forProduct3("organisation", "productToken", "clientPublicKey")(p => (p.organisation, p.productToken, p.clientPublicKey))

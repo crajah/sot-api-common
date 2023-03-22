@@ -33,10 +33,7 @@ class ProductRegisterSpec extends WordSpec with MustMatchers {
 
       o mustEqual organisation
       new String(p.decrypt) mustEqual "blah"
-
       c.get.value mustEqual clientPublicKey.value
-      c.get.keyPair.getPublic mustEqual clientPublicKey.keyPair.getPublic
-      c.get.keyPair.getPrivate mustEqual clientPublicKey.keyPair.getPrivate
     }
   }
 }
