@@ -9,26 +9,26 @@ class OrganisationSpec extends WordSpec with MustMatchers {
   implicit val crypto: CryptoMechanic = new CryptoMechanic(secret = "victorias secret".getBytes)
 
   "Organisation" should {
-    "be encypted and decrypted" in {
-      val organisation = Organisation("id", "code", "email")
+    "be encrypted and decrypted" in {
+      val organisation = Organisation("id", "code", "email", "secret")
 
       Encrypted(organisation).decryptT[Organisation] mustEqual organisation
     }
 
     "be decoded" in {
-      val Right(organisationPostedJson) = parse(s"""{ "org_code":"SOME CODE", "org_email":"someone@gmail.com" }""")
+      val Right(organisationPostedJson) = parse(s"""{ "org_code":"SOME CODE", "org_email":"someone@gmail.com", "org_shared_secret":"secret" }""")
 
       organisationPostedJson.as[Organisation] must matchPattern {
-        case Right(Organisation(_, "SOME CODE", "someone@gmail.com")) =>
+        case Right(Organisation(_, "SOME CODE", "someone@gmail.com", "secret")) =>
       }
     }
 
     "be encoded" in {
-      val organisation = Organisation("id", "SOME CODE", "someone@gmail.com")
+      val organisation = Organisation("id", "SOME CODE", "someone@gmail.com", "secret")
       val json = organisation.asJson
 
       json.as[Organisation] must matchPattern {
-        case Right(Organisation(_, "SOME CODE", "someone@gmail.com")) =>
+        case Right(Organisation(_, "SOME CODE", "someone@gmail.com", "secret")) =>
       }
     }
   }
