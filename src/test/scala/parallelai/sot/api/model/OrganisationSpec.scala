@@ -1,12 +1,12 @@
 package parallelai.sot.api.model
 
-import org.scalatest.{MustMatchers, WordSpec}
-import parallelai.common.secure.{CryptoMechanic, Encrypted}
 import io.circe.parser._
 import io.circe.syntax._
+import org.scalatest.{MustMatchers, WordSpec}
+import parallelai.common.secure.{AES, CryptoMechanic, Encrypted}
 
 class OrganisationSpec extends WordSpec with MustMatchers {
-  implicit val crypto: CryptoMechanic = new CryptoMechanic(secret = "victorias secret".getBytes)
+  implicit val crypto: CryptoMechanic = new CryptoMechanic(AES, secret = "victorias secret".getBytes)
 
   "Organisation" should {
     "be encrypted and decrypted" in {
