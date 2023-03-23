@@ -1,6 +1,6 @@
 package parallelai.sot.api.model
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 import org.apache.commons.lang3.SerializationUtils._
@@ -8,7 +8,7 @@ import parallelai.common.secure.{FromBytes, ToBytes}
 
 case class Organisation(id: String, code: String, email: String)
 
-object Organisation {
+object Organisation extends IdGenerator {
   implicit val organisationToBytes: ToBytes[Organisation] =
     (organisation: Organisation) => serialize(organisation)
 
@@ -18,9 +18,13 @@ object Organisation {
   implicit val rootJsonFormat: RootJsonFormat[Organisation] =
     jsonFormat3(Organisation.apply)
 
-  implicit val encoder: Encoder[Organisation] =
-    Encoder.forProduct3("id", "code", "email")(o => (o.id, o.code, o.email))
+  implicit val encoder: Encoder[Organisation] = (a: Organisation) => Json.obj(
+    "id" -> Json.fromString(a.id),
+    "org_code" -> Json.fromString(a.code),
+    "org_email" -> Json.fromString(a.email))
 
-  implicit val decoder: Decoder[Organisation] =
-    Decoder.forProduct3("id", "code", "email")(Organisation.apply)
+  implicit val organizationDecoder: Decoder[Organisation] = (c: HCursor) => for {
+    code <- c.downField("org_code").as[String]
+    email <- c.downField("org_email").as[String]
+  } yield Organisation(uniqueId(), code, email)
 }
