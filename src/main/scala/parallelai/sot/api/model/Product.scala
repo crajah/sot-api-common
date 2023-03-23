@@ -30,3 +30,11 @@ object Product extends DefaultJsonProtocol {
 
   implicit val decoder: Decoder[Product] = deriveDecoder
 }
+
+case class ProductToken(licenceId: String, code: String, email: String)
+
+object ProductToken {
+  implicit val tokenToBytes: ToBytes[ProductToken] = serialize(_)
+
+  implicit val tokenFromBytes: FromBytes[ProductToken] = deserialize[ProductToken](_)
+}
