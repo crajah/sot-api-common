@@ -11,6 +11,16 @@ object JsonLens {
   implicit def lens2jsValue(value: Json): JsValue = value.unwrap
 
   class Json(val value: Option[JsValue]) {
+    def containsFields(fields: String*): Boolean =
+      if (fields.isEmpty) {
+        true
+      } else {
+        value.fold(false) {
+          case j: JsObject => j.getFields(fields: _*).lengthCompare(fields.size) == 0
+          case _ => false
+        }
+      }
+
     def /(name: String): Json = Json(value.flatMap(_.asJsObject.fields.get(name)))
 
     def -(name: String): Json = Json(value.map(obj => JsObject(obj.asJsObject.fields - name)))
