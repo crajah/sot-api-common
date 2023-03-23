@@ -3,18 +3,25 @@ package parallelai.sot.api.endpoints
 import spray.json._
 import com.twitter.finagle.http.Status
 import parallelai.sot.api.json.JsonLens._
+import spray.json.lenses.JsonLenses._
 
 case class Response(content: JsValue, status: Status)
 
-// TODO - Hateoas
+// TODO - Hateoas, such as links
 object Response extends DefaultJsonProtocol {
   implicit val statusJsonWriter: JsonWriter[Status] =
     (status: Status) => JsObject(
       "code" -> JsNumber(status.code),
       "reason" -> JsString(status.reason))
 
-  implicit val responseWriter: JsonWriter[Response] =
+  implicit val statusJsonReader: JsonReader[Status] =
+    (json: JsValue) => Status(json.extract[Int]("code"))
+
+  implicit val responseJsonWriter: JsonWriter[Response] =
     (response: Response) => JsObject("content" -> response.content) << ("http-status", response.status.toJson)
+
+  implicit val responseJsonReader: JsonReader[Response] =
+    (json: JsValue) => Response(json.extract[JsValue]("content"), json.extract[Status]("http-status"))
 
   def apply[J: JsonWriter](j: J, status: Status = Status.Ok) =
     new Response(implicitly[JsonWriter[J]].write(j), status)
