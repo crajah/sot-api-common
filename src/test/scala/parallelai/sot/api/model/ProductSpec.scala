@@ -10,34 +10,34 @@ class ProductSpec extends WordSpec with MustMatchers {
 
   "Product" should {
     "be converted to/from JSON with no client public key" in {
-      val token = ProductToken("licenceId", "productCode", "productEmail")
-      val product = Product("code", "email", Encrypted(token))
+      val productToken = ProductToken("licenceId", "productCode", "productEmail")
+      val product = Product("code", "email", Encrypted(productToken))
 
       val Right(extractedProduct) = product.asJson.as[Product]
 
-      extractedProduct.token.decryptT[ProductToken] mustEqual token
+      extractedProduct.token.decryptT[ProductToken] mustEqual productToken
       extractedProduct.clientPublicKey mustBe None
     }
 
     "be converted to/from JSON with a client public key" in {
-      val token = ProductToken("licenceId", "productCode", "productEmail")
+      val productToken = ProductToken("licenceId", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
-      val product = Product("code", "email", Encrypted(token), Option(clientPublicKey))
+      val product = Product("code", "email", Encrypted(productToken), Option(clientPublicKey))
 
       val Right(extractedProduct) = product.asJson.as[Product]
 
-      extractedProduct.token.decryptT[ProductToken] mustEqual token
+      extractedProduct.token.decryptT[ProductToken] mustEqual productToken
       extractedProduct.clientPublicKey.get.value mustBe clientPublicKey.value
     }
 
     "be encypted and decrypted" in {
-      val token = ProductToken("licenceId", "productCode", "productEmail")
+      val productToken = ProductToken("licenceId", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
-      val product = Product("code", "email", Encrypted(token), Option(clientPublicKey))
+      val product = Product("code", "email", Encrypted(productToken), Option(clientPublicKey))
 
       val decryptedProduct = Encrypted(product).decryptT[Product]
 
-      decryptedProduct.token.decryptT[ProductToken] mustEqual token
+      decryptedProduct.token.decryptT[ProductToken] mustEqual productToken
       decryptedProduct.clientPublicKey.get.value mustBe clientPublicKey.value
     }
   }
