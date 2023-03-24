@@ -10,25 +10,25 @@ class OrganisationSpec extends WordSpec with MustMatchers {
 
   "Organisation" should {
     "be encrypted and decrypted" in {
-      val organisation = Organisation("id", "code", "email", "secret")
+      val organisation = Organisation("id", "code", "email")
 
       Encrypted(organisation).decryptT[Organisation] mustEqual organisation
     }
 
     "be decoded" in {
-      val Right(organisationPostedJson) = parse(s"""{ "org_code":"SOME CODE", "org_email":"someone@gmail.com", "org_shared_secret":"secret" }""")
+      val Right(organisationPostedJson) = parse(s"""{ "org_code":"SOME CODE", "org_email":"someone@gmail.com" }""")
 
       organisationPostedJson.as[Organisation] must matchPattern {
-        case Right(Organisation(_, "SOME CODE", "someone@gmail.com", "secret")) =>
+        case Right(Organisation(_, "SOME CODE", "someone@gmail.com")) =>
       }
     }
 
     "be encoded" in {
-      val organisation = Organisation("id", "SOME CODE", "someone@gmail.com", "secret")
+      val organisation = Organisation("id", "SOME CODE", "someone@gmail.com")
       val json = organisation.asJson
 
       json.as[Organisation] must matchPattern {
-        case Right(Organisation(_, "SOME CODE", "someone@gmail.com", "secret")) =>
+        case Right(Organisation(_, "SOME CODE", "someone@gmail.com")) =>
       }
     }
   }
