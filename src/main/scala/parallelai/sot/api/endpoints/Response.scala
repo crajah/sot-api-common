@@ -1,5 +1,7 @@
 package parallelai.sot.api.endpoints
 
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import spray.json._
 import com.twitter.finagle.http.Status
 import parallelai.sot.api.json.JsonLens._
@@ -9,6 +11,10 @@ case class Response(content: JsValue, status: Status)
 
 // TODO - Hateoas, such as links
 object Response extends DefaultJsonProtocol {
+  implicit val statusEncoder: Encoder[Status] = deriveEncoder
+
+  implicit val statusDecoder: Decoder[Status] = deriveDecoder
+
   implicit val statusJsonWriter: JsonWriter[Status] =
     (status: Status) => JsObject(
       "code" -> JsNumber(status.code),
