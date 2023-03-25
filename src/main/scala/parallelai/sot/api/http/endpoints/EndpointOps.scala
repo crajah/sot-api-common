@@ -16,7 +16,7 @@ trait EndpointOps {
   implicit class FutureResponseOps[T](f: Future[Response]) {
     def toOutput: Future[Output[Response]] = f recover {
       case ResponseException(r) => r
-      case t: Throwable => Response(Error(t.getMessage), Status.InternalServerError)
+      case t: Throwable => Response(Response.Error(t.getMessage), Status.InternalServerError)
     } map { response =>
       Output.payload(response, response.status)
     }
