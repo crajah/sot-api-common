@@ -1,4 +1,4 @@
-package parallelai.sot.api.endpoints
+package parallelai.sot.api.http.endpoints
 
 import spray.json.DefaultJsonProtocol._
 import spray.json._

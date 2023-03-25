@@ -1,4 +1,4 @@
-package parallelai.sot.api.endpoints
+package parallelai.sot.api.http.endpoints
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
@@ -7,6 +7,7 @@ import com.twitter.finagle.http.Status
 import parallelai.sot.api.json.JsonLens._
 import spray.json.lenses.JsonLenses._
 
+@deprecated(message = "Use parallelai.sot.api.http.Result", since = "17th March 2018")
 case class Response(content: JsValue, status: Status)
 
 // TODO - Hateoas, such as links

@@ -1,4 +1,4 @@
-package parallelai.sot.api.endpoints
+package parallelai.sot.api.http.endpoints
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

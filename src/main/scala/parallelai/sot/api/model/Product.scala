@@ -11,9 +11,9 @@ import parallelai.common.secure.{Encrypted, FromBytes, ToBytes}
 case class Product(code: String, email: String, token: Encrypted, clientPublicKey: Option[ClientPublicKey] = None)
 
 object Product extends DefaultJsonProtocol {
-  implicit val productToBytes: ToBytes[Product] = serialize(_)
+  implicit val toBytes: ToBytes[Product] = serialize(_)
 
-  implicit val productFromBytes: FromBytes[Product] = deserialize[Product](_)
+  implicit val fromBytes: FromBytes[Product] = deserialize[Product](_)
 
   implicit val rootJsonFormat: RootJsonFormat[Product] =
     jsonFormat4(Product.apply)
