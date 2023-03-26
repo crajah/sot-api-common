@@ -12,7 +12,7 @@ class OrganisationSpec extends WordSpec with MustMatchers {
     "be encrypted and decrypted" in {
       val organisation = Organisation("id", "code", "email")
 
-      Encrypted(organisation).decryptT[Organisation] mustEqual organisation
+      Encrypted(organisation).decrypt mustEqual organisation
     }
 
     "be decoded" in {

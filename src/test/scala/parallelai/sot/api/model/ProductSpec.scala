@@ -1,9 +1,9 @@
 package parallelai.sot.api.model
 
+import io.circe.syntax._
 import org.scalatest.{MustMatchers, WordSpec}
 import parallelai.common.secure.diffiehellman.DiffieHellmanClient
 import parallelai.common.secure.{AES, CryptoMechanic, Encrypted}
-import io.circe.syntax._
 
 class ProductSpec extends WordSpec with MustMatchers {
   implicit val crypto: CryptoMechanic = new CryptoMechanic(AES, secret = "victorias secret".getBytes)
@@ -15,7 +15,7 @@ class ProductSpec extends WordSpec with MustMatchers {
 
       val Right(extractedProduct) = product.asJson.as[Product]
 
-      extractedProduct.token.decryptT[ProductToken] mustEqual productToken
+      extractedProduct.token.decrypt mustEqual productToken
       extractedProduct.clientPublicKey mustBe None
     }
 
@@ -26,7 +26,7 @@ class ProductSpec extends WordSpec with MustMatchers {
 
       val Right(extractedProduct) = product.asJson.as[Product]
 
-      extractedProduct.token.decryptT[ProductToken] mustEqual productToken
+      extractedProduct.token.decrypt mustEqual productToken
       extractedProduct.clientPublicKey.get.value mustBe clientPublicKey.value
     }
 
@@ -35,9 +35,9 @@ class ProductSpec extends WordSpec with MustMatchers {
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
       val product = Product("code", "email", Encrypted(productToken), Option(clientPublicKey))
 
-      val decryptedProduct = Encrypted(product).decryptT[Product]
+      val decryptedProduct = Encrypted(product).decrypt
 
-      decryptedProduct.token.decryptT[ProductToken] mustEqual productToken
+      decryptedProduct.token.decrypt mustEqual productToken
       decryptedProduct.clientPublicKey.get.value mustBe clientPublicKey.value
     }
   }
