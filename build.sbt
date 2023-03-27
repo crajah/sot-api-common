@@ -2,6 +2,7 @@ import scala.language.postfixOps
 import sbt.Resolver
 import sbt.Keys.{libraryDependencies, publishTo}
 import com.amazonaws.regions.{Region, Regions}
+import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 import Dependencies._
 import SotDependencies._
 
@@ -23,6 +24,7 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
         scalaVersion := scala_2_12
       )
     ),
+    promptTheme := com.scalapenos.sbt.prompt.PromptThemes.ScalapenosTheme,
     scalacOptions ++= Seq(
       "-deprecation",           // Emit warning and location for usages of deprecated APIs.
       "-feature",               // Emit warning and location for usages of features that should be imported explicitly.

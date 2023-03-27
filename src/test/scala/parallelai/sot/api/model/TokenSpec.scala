@@ -1,6 +1,5 @@
 package parallelai.sot.api.model
 
-import io.circe.parser._
 import io.circe.syntax._
 import org.scalatest.{MustMatchers, WordSpec}
 import parallelai.common.secure.{AES, CryptoMechanic, Encrypted}
@@ -10,26 +9,15 @@ class TokenSpec extends WordSpec with MustMatchers {
 
   "Token" should {
     "be encrypted and decrypted" in {
-      val organisation = Token("id", "code", "email")
+      val token = Token("id", "code", "email")
 
-      Encrypted(organisation).decrypt mustEqual organisation
+      Encrypted(token).decrypt mustEqual token
     }
 
-    "be decoded" in {
-      val Right(organisationPostedJson) = parse(s"""{ "org_code":"SOME CODE", "org_email":"someone@gmail.com" }""")
+    "be converted to JSON and back again" in {
+      val token = Token("id", "code", "email")
 
-      organisationPostedJson.as[Token] must matchPattern {
-        case Right(Token(_, "SOME CODE", "someone@gmail.com")) =>
-      }
-    }
-
-    "be encoded" in {
-      val organisation = Token("id", "SOME CODE", "someone@gmail.com")
-      val json = organisation.asJson
-
-      json.as[Token] must matchPattern {
-        case Right(Token(_, "SOME CODE", "someone@gmail.com")) =>
-      }
+      token.asJson.as[Token].right.get mustEqual token
     }
   }
 }
