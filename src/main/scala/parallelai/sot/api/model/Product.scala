@@ -36,7 +36,7 @@ object Product {
     val clientPublicKey: Option[Json] =
       product.clientPublicKey.map(c => Json.obj("clientPublicKey" -> c.asJson))
 
-    Seq(token, clientPublicKey).flatten.fold(json) { _ deepMerge _ }
+    Seq(token, clientPublicKey).flatten.foldLeft(json) { (acc, json) => json deepMerge acc }
   }
 
   implicit val decoder: Decoder[Product] = (c: HCursor) => for {
