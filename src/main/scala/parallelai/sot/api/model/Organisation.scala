@@ -1,11 +1,13 @@
 package parallelai.sot.api.model
 
+import java.util.Base64.{getDecoder, getEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, HCursor, Json}
+import javax.crypto.SecretKey
 import org.apache.commons.lang3.SerializationUtils._
 import parallelai.common.secure._
 
-case class Organisation(code: String, email: String, token: Option[Encrypted[Token]])
+case class Organisation(code: String, email: String, token: Option[Encrypted[Token]], secret: Option[SecretKey])
 
 object Organisation {
   implicit val toBytes: ToBytes[Organisation] =
@@ -23,12 +25,16 @@ object Organisation {
     val token: Option[Json] =
       organisation.token.map(c => Json.obj("token" -> c.asJson))
 
-    token.fold(json) { _ deepMerge json }
+    val secret: Option[Json] =
+      organisation.secret.map(secret => Json.obj("secret" -> Json.fromString(getEncoder encodeToString serialize(secret))))
+
+    Seq(token, secret).flatten.foldLeft(json) { (acc, json) => json deepMerge acc }
   }
 
   implicit val decoder: Decoder[Organisation] = (c: HCursor) => for {
     code <- c.downField("code").as[String]
     email <- c.downField("email").as[String]
     token <- c.downField("token").as[Option[Encrypted[Token]]]
-  } yield Organisation(code, email, token)
+    secret <- c.downField("secret").as[Option[String]]
+  } yield Organisation(code, email, token, secret.map(s => deserialize[SecretKey](getDecoder decode s)))
 }
