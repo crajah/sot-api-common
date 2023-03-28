@@ -17,10 +17,7 @@ class TokenSpec extends WordSpec with MustMatchers {
     "be converted to JSON and back again" in {
       val token = Token("id", "code", "email", Option(Crypto.aesSecretKey))
 
-      val asJson = token.asJson
-      println(asJson)
-
-      asJson.as[Token].right.get mustEqual token
+      token.asJson.as[Token].right.get mustEqual token
     }
   }
 }

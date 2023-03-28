@@ -10,7 +10,7 @@ class ProductSpec extends WordSpec with MustMatchers {
 
   "Product" should {
     "be converted to/from JSON with no client public key" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val product = Product("code", "email", Option(Encrypted(productToken)))
 
       val Right(extractedProduct) = product.asJson.as[Product]
@@ -20,7 +20,7 @@ class ProductSpec extends WordSpec with MustMatchers {
     }
 
     "be converted to/from JSON with a client public key" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
       val product = Product("code", "email", Option(Encrypted(productToken)), Option(clientPublicKey))
 
@@ -31,7 +31,7 @@ class ProductSpec extends WordSpec with MustMatchers {
     }
 
     "be encrypted and decrypted" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
       val product = Product("code", "email", Option(Encrypted(productToken)), Option(clientPublicKey))
 
