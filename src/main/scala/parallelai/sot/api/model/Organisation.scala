@@ -5,7 +5,7 @@ import io.circe.{Decoder, Encoder, HCursor, Json}
 import org.apache.commons.lang3.SerializationUtils._
 import parallelai.common.secure._
 
-case class Organisation(code: String, email: String, token: Option[Encrypted[Token]] = None)
+case class Organisation(code: String, email: String, token: Option[Encrypted[Token]])
 
 object Organisation {
   implicit val toBytes: ToBytes[Organisation] =
