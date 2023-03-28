@@ -10,7 +10,7 @@ class RegisteredProductSpec extends WordSpec with MustMatchers {
 
   val clientPublicKey: ClientPublicKey = DiffieHellmanClient.createClientPublicKey
   val (serverPublicKey, serverSharedSecret) = DiffieHellmanServer.create(clientPublicKey)
-  val apiSharedSecret = ApiSharedSecret("uniqueId", Crypto.aesSecretKey)
+  val apiSharedSecret = SharedSecret("uniqueId", Crypto.aesSecretKey)
 
   val registeredProduct = RegisteredProduct(serverPublicKey, Encrypted(apiSharedSecret))
 
