@@ -1,27 +1,28 @@
 package parallelai.sot.api.model
 
 import java.util.Base64._
-import javax.crypto.SecretKey
-
 import io.circe.{Decoder, Encoder, HCursor, Json}
+import javax.crypto.SecretKey
 import org.apache.commons.lang3.SerializationUtils._
 import parallelai.common.secure.{FromBytes, ToBytes}
 
-case class Token(id: String, code: String, email: String, secret: Option[SecretKey])
+case class Token(id: String, code: String, email: String, secret: Option[SecretKey] = None)
 
 object Token {
   implicit val toBytes: ToBytes[Token] = serialize(_)
 
   implicit val fromBytes: FromBytes[Token] = deserialize[Token](_)
 
-  implicit val encoder: Encoder[Token] = (a: Token) => {
+  implicit val encoder: Encoder[Token] = (t: Token) => {
     val json = Json.obj(
-      "id" -> Json.fromString(a.id),
-      "code" -> Json.fromString(a.code),
-      "email" -> Json.fromString(a.email)
+      "id" -> Json.fromString(t.id),
+      "code" -> Json.fromString(t.code),
+      "email" -> Json.fromString(t.email)
     )
 
-    a.secret.fold(json)(s => Json.obj("secret" -> Json.fromString(getEncoder encodeToString serialize(s))) deepMerge json)
+    t.secret.fold(json) { secret =>
+      Json.obj("secret" -> Json.fromString(getEncoder encodeToString serialize(secret))) deepMerge json
+    }
   }
 
   implicit val decoder: Decoder[Token] = (c: HCursor) => for {

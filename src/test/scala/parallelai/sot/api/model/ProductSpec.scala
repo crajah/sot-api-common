@@ -3,14 +3,14 @@ package parallelai.sot.api.model
 import io.circe.syntax._
 import org.scalatest.{MustMatchers, WordSpec}
 import parallelai.common.secure.diffiehellman.DiffieHellmanClient
-import parallelai.common.secure.{AES, CryptoMechanic, Encrypted}
+import parallelai.common.secure.{AES, Crypto, Encrypted}
 
 class ProductSpec extends WordSpec with MustMatchers {
-  implicit val crypto: CryptoMechanic = new CryptoMechanic(AES, secret = "victorias secret".getBytes)
+  implicit val crypto: Crypto = new Crypto(AES, "victorias secret".getBytes)
 
   "Product" should {
     "be converted to/from JSON with no client public key" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val product = Product("code", "email", Option(Encrypted(productToken)))
 
       val Right(extractedProduct) = product.asJson.as[Product]
@@ -20,7 +20,7 @@ class ProductSpec extends WordSpec with MustMatchers {
     }
 
     "be converted to/from JSON with a client public key" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
       val product = Product("code", "email", Option(Encrypted(productToken)), Option(clientPublicKey))
 
@@ -31,7 +31,7 @@ class ProductSpec extends WordSpec with MustMatchers {
     }
 
     "be encrypted and decrypted" in {
-      val productToken = Token("id", "productCode", "productEmail", None)
+      val productToken = Token("id", "productCode", "productEmail")
       val clientPublicKey = DiffieHellmanClient.createClientPublicKey
       val product = Product("code", "email", Option(Encrypted(productToken)), Option(clientPublicKey))
 

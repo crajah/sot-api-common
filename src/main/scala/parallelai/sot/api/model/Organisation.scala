@@ -7,7 +7,7 @@ import javax.crypto.SecretKey
 import org.apache.commons.lang3.SerializationUtils._
 import parallelai.common.secure._
 
-case class Organisation(code: String, email: String, token: Option[Encrypted[Token]], secret: Option[SecretKey])
+case class Organisation(code: String, email: String, token: Option[Encrypted[Token]] = None, secret: Option[SecretKey] = None)
 
 object Organisation {
   implicit val toBytes: ToBytes[Organisation] =

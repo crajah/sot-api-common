@@ -6,7 +6,7 @@ import parallelai.common.secure._
 import parallelai.common.secure.diffiehellman.{ClientPublicKey, DiffieHellmanClient, DiffieHellmanServer}
 
 class RegisteredProductSpec extends WordSpec with MustMatchers {
-  implicit val crypto: CryptoMechanic = new CryptoMechanic(AES, secret = "victorias secret".getBytes)
+  implicit val crypto: Crypto = new Crypto(AES, "victorias secret".getBytes)
 
   val clientPublicKey: ClientPublicKey = DiffieHellmanClient.createClientPublicKey
   val (serverPublicKey, serverSharedSecret) = DiffieHellmanServer.create(clientPublicKey)
