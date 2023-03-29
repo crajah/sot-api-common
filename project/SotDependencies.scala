@@ -1,5 +1,5 @@
 import sbt._
 
 object SotDependencies {
-  val sotCommonSecure = "parallelai" %% "sot_common_secure" % "0.1.27"
+  val sotCommonSecure = "parallelai" %% "sot_common_secure" % "0.1.29"
 }
