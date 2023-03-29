@@ -9,7 +9,7 @@ class OrganisationSpec extends WordSpec with MustMatchers {
 
   "Organisation" should {
     "have token and secret added" in {
-      val organisation = Organisation("code", "email")
+      val organisation = Organisation("code", "email", None, None)
 
       organisation must have (
         'token (None),

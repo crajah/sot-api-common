@@ -9,13 +9,13 @@ class TokenSpec extends WordSpec with MustMatchers {
 
   "Token" should {
     "be encrypted and decrypted" in {
-      val token = Token("id", "code", "email", Option(crypto.aesSecretKey))
+      val token = Token("id", "code", "email")
 
       Encrypted(token).decrypt mustEqual token
     }
 
     "be converted to JSON and back again" in {
-      val token = Token("id", "code", "email", Option(crypto.aesSecretKey))
+      val token = Token("id", "code", "email")
 
       token.asJson.as[Token].right.get mustEqual token
     }
