@@ -11,7 +11,7 @@ lazy val sbt_1_1_1 = "1.1.1"
 
 lazy val IT = config("it") extend Test
 
-lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
+lazy val `sot-api-common` = (project in file(".")).enablePlugins(GatlingPlugin)
   .configs(IT, IntegrationTest, GatlingIt)
   .settings(Defaults.itSettings: _*)
   .settings(inConfig(IT)(Defaults.testSettings): _*)
@@ -92,7 +92,8 @@ lazy val root = (project in file(".")).enablePlugins(GatlingPlugin)
       sttpCirce,
       monocleCore,
       monocleMacro,
-      commonsLang
+      commonsLang,
+      scalaDateTime
     ) ++ circe,
     libraryDependencies ++= Seq(
       sotCommonSecure

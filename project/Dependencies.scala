@@ -60,4 +60,6 @@ object Dependencies {
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser"
   ).map(_ % "0.9.1")
+
+  val scalaDateTime = "com.github.nscala-time" %% "nscala-time" % "2.18.0"
 }
