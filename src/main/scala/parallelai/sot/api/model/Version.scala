@@ -1,7 +1,7 @@
 package parallelai.sot.api.model
 
+import java.net.URI
 import io.circe._
-import io.circe.generic.semiauto._
 import io.circe.syntax._
 import spray.json.DefaultJsonProtocol._
 import spray.json._
@@ -13,11 +13,9 @@ import parallelai.common.secure.{FromBytes, ToBytes}
 case class Version(value: String, token: Option[Token] = None, expiry: Option[DateTime] = None)
 
 object Version {
-  implicit val toBytes: ToBytes[Version] =
-    (version: Version) => serialize(version)
+  implicit val toBytes: ToBytes[Version] = serialize(_)
 
-  implicit val fromBytes: FromBytes[Version] =
-    (a: Array[Byte]) => deserialize[Version](a)
+  implicit val fromBytes: FromBytes[Version] = deserialize[Version](_)
 
   implicit val rootJsonFormat: RootJsonFormat[Version] = new RootJsonFormat[Version] {
     def write(version: Version): JsValue = JsObject("version" -> JsString(version.value))
@@ -62,10 +60,23 @@ object Versions {
   implicit val rootJsonFormat: RootJsonFormat[Versions] = jsonFormat1(Versions.apply)
 }
 
-case class RegisteredVersion()
+case class RegisteredVersion(uri: URI, token: Token, expiry: DateTime)
 
 object RegisteredVersion {
-  implicit val encoder: Encoder[RegisteredVersion] = deriveEncoder[RegisteredVersion]
+  implicit val toBytes: ToBytes[RegisteredVersion] = serialize(_)
 
-  implicit val decoder: Decoder[RegisteredVersion] = deriveDecoder[RegisteredVersion]
+  implicit val fromBytes: FromBytes[RegisteredVersion] = deserialize[RegisteredVersion](_)
+
+  implicit val encoder: Encoder[RegisteredVersion] = (v: RegisteredVersion) =>
+    Json.obj(
+      "uri" -> Json.fromString(v.uri.toString),
+      "token" -> v.token.asJson,
+      "expiry" -> Json.fromString(v.expiry.toString)
+    )
+
+  implicit val decoder: Decoder[RegisteredVersion] = (c: HCursor) => for {
+    uri <- c.downField("uri").as[String]
+    token <- c.downField("token").as[Token]
+    expiry <- c.downField("expiry").as[String]
+  } yield RegisteredVersion(new URI(uri), token, DateTime.parse(expiry))
 }
