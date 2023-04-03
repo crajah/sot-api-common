@@ -60,7 +60,7 @@ object Versions {
   implicit val rootJsonFormat: RootJsonFormat[Versions] = jsonFormat1(Versions.apply)
 }
 
-case class RegisteredVersion(uri: URI, token: Token, expiry: DateTime)
+case class RegisteredVersion(uri: URI, version: String, token: Token, expiry: DateTime)
 
 object RegisteredVersion {
   implicit val toBytes: ToBytes[RegisteredVersion] = serialize(_)
@@ -70,13 +70,15 @@ object RegisteredVersion {
   implicit val encoder: Encoder[RegisteredVersion] = (v: RegisteredVersion) =>
     Json.obj(
       "uri" -> Json.fromString(v.uri.toString),
+      "version" -> Json.fromString(v.version),
       "token" -> v.token.asJson,
       "expiry" -> Json.fromString(v.expiry.toString)
     )
 
   implicit val decoder: Decoder[RegisteredVersion] = (c: HCursor) => for {
     uri <- c.downField("uri").as[String]
+    version <- c.downField("version").as[String]
     token <- c.downField("token").as[Token]
     expiry <- c.downField("expiry").as[String]
-  } yield RegisteredVersion(new URI(uri), token, DateTime.parse(expiry))
+  } yield RegisteredVersion(new URI(uri), version, token, DateTime.parse(expiry))
 }

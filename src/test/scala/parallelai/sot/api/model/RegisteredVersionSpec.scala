@@ -12,21 +12,23 @@ class RegisteredVersionSpec extends WordSpec with MustMatchers with Inside {
   "Registered version" should {
     "be converted to/from JSON" in {
       val uri = new URI("http://parallelai.com/registered-version")
+      val version = "v1.0.0"
       val token = Token("licenceId", "organisationCode", "me@gmail.com")
       val nextDay = DateTime.nextDay
-      val registeredVersion = RegisteredVersion(uri, token, nextDay)
+      val registeredVersion = RegisteredVersion(uri, version, token, nextDay)
 
       inside(registeredVersion.asJson.as[RegisteredVersion]) {
-        case Right(RegisteredVersion(`uri`, `token`, nd)) =>
+        case Right(RegisteredVersion(`uri`, `version`, `token`, nd)) =>
           nd.getMillis mustEqual nextDay.getMillis
       }
     }
 
     "be encrypted and decrypted" in {
       val uri = new URI("http://parallelai.com/registered-version")
+      val version = "v1.0.0"
       val token = Token("licenceId", "organisationCode", "me@gmail.com")
       val nextDay = DateTime.nextDay
-      val registeredVersion = RegisteredVersion(uri, token, nextDay)
+      val registeredVersion = RegisteredVersion(uri, version, token, nextDay)
 
       Encrypted(registeredVersion).decrypt mustEqual registeredVersion
     }
