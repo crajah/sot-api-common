@@ -5,7 +5,7 @@ import io.circe.{Decoder, Encoder}
 import spray.json._
 import spray.json.lenses.JsonLenses._
 import com.twitter.finagle.http.Status
-import parallelai.sot.api.json.JsonLens._
+import parallelai.sot.api.json.SprayJsonLens._
 
 @deprecated(message = "Use parallelai.sot.api.http.Result", since = "17th March 2018")
 case class Response(content: JsValue, status: Status)

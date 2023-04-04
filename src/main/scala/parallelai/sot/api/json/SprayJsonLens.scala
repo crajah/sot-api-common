@@ -5,12 +5,12 @@ import scala.reflect.ClassTag
 import scala.util.{Either, Left, Right}
 import spray.json._
 
-object JsonLens {
-  implicit def jsValue2Lens(value: JsValue): Json = Json(Option(value))
+object SprayJsonLens {
+  implicit def jsValue2Lens(value: JsValue): SprayJson = SprayJson(Option(value))
 
-  implicit def lens2jsValue(value: Json): JsValue = value.unwrap
+  implicit def lens2jsValue(value: SprayJson): JsValue = value.unwrap
 
-  class Json(val value: Option[JsValue]) {
+  class SprayJson(val value: Option[JsValue]) {
     def containsFields(fields: String*): Boolean =
       if (fields.isEmpty) {
         true
@@ -21,24 +21,24 @@ object JsonLens {
         }
       }
 
-    def /(name: String): Json = Json(value.flatMap(_.asJsObject.fields.get(name)))
+    def /(name: String): SprayJson = SprayJson(value.flatMap(_.asJsObject.fields.get(name)))
 
-    def -(name: String): Json = Json(value.map(obj => JsObject(obj.asJsObject.fields - name)))
+    def -(name: String): SprayJson = SprayJson(value.map(obj => JsObject(obj.asJsObject.fields - name)))
 
-    def apply(index: Int): Json = value map {
-      case array: JsArray if array.elements.size > index => Json(Some(array.elements(index)))
-      case _ => Json.empty
-    } getOrElse Json.empty
+    def apply(index: Int): SprayJson = value map {
+      case array: JsArray if array.elements.size > index => SprayJson(Some(array.elements(index)))
+      case _ => SprayJson.empty
+    } getOrElse SprayJson.empty
 
     def isDefined: Boolean = value.isDefined
 
     def isEmpty: Boolean = value.isEmpty
 
-    def at(path: String, separator: Char): Json = path.split(separator).foldLeft(this) {
+    def at(path: String, separator: Char): SprayJson = path.split(separator).foldLeft(this) {
       case (json, segment) => json / segment
     }
 
-    def at(path: String): Json = at(path, '/')
+    def at(path: String): SprayJson = at(path, '/')
 
     def optionAt[T](path: String, separator: Char)(implicit r: JsonReader[T]): Option[T] =
       at(path, separator).value flatMap {
@@ -69,32 +69,32 @@ object JsonLens {
       case _ => Seq.empty
     }
 
-    def flatMap(f: JsValue => Json): Json = value match {
-      case Some(array: JsArray) => Json(JsArray(array.map(f.andThen(_.unwrap)): _*))
+    def flatMap(f: JsValue => SprayJson): SprayJson = value match {
+      case Some(array: JsArray) => SprayJson(JsArray(array.map(f.andThen(_.unwrap)): _*))
       case Some(jsvalue) => f(jsvalue)
-      case _ => Json.empty
+      case _ => SprayJson.empty
     }
 
-    def filter(f: JsValue => Boolean): Json = value match {
-      case Some(array: JsArray) => Json(JsArray(array.elements.filter(f)))
-      case Some(JsObject(fields)) => Json(JsObject(fields.filter { case (_, v) => f(v) }))
-      case Some(jsvalue) => if (f(jsvalue)) this else Json.empty
-      case _ => Json.empty
+    def filter(f: JsValue => Boolean): SprayJson = value match {
+      case Some(array: JsArray) => SprayJson(JsArray(array.elements.filter(f)))
+      case Some(JsObject(fields)) => SprayJson(JsObject(fields.filter { case (_, v) => f(v) }))
+      case Some(jsvalue) => if (f(jsvalue)) this else SprayJson.empty
+      case _ => SprayJson.empty
     }
 
-    def filterNot(f: JsValue => Boolean): Json = filter(!f(_))
+    def filterNot(f: JsValue => Boolean): SprayJson = filter(!f(_))
 
-    def filterObject(f: JsField => Boolean): Json = value match {
-      case Some(JsObject(fields)) => Json(JsObject(fields.filter(f)))
-      case _ => Json.empty
+    def filterObject(f: JsField => Boolean): SprayJson = value match {
+      case Some(JsObject(fields)) => SprayJson(JsObject(fields.filter(f)))
+      case _ => SprayJson.empty
     }
 
     def getOrElse(that: JsValue): JsValue = value getOrElse that
 
-    def orElse(that: Json): Json = if (isDefined) this else that
+    def orElse(that: SprayJson): SprayJson = if (isDefined) this else that
 
     override def equals(other: Any): Boolean = other match {
-      case json: Json => value == json.value
+      case json: SprayJson => value == json.value
       case _ => false
     }
 
@@ -103,38 +103,38 @@ object JsonLens {
       * @param update Any
       * @return Json
       */
-    def :+(update: Any): Json = {
-      def encoded: JsValue = Json.encode(update) match {
+    def :+(update: Any): SprayJson = {
+      def encoded: JsValue = SprayJson.encode(update) match {
         case Left(_) => throw new IllegalArgumentException("attempt to add a JsField to a JsArray")
         case Right(element) => element
       }
 
       value match {
-        case Some(JsArray(elements)) => Json(JsArray(elements :+ encoded))
-        case Some(JsNull) | None => Json(JsArray(encoded))
+        case Some(JsArray(elements)) => SprayJson(JsArray(elements :+ encoded))
+        case Some(JsNull) | None => SprayJson(JsArray(encoded))
         case _ => throw new IllegalArgumentException("attempt to add an array element to a JsObject")
       }
     }
 
-    def <<(name: String, update: String): Json = updated(name -> JsString(update))
+    def <<(name: String, update: String): SprayJson = updated(name -> JsString(update))
 
-    def <<(name: String, update: Boolean): Json = updated(name -> JsBoolean(update))
+    def <<(name: String, update: Boolean): SprayJson = updated(name -> JsBoolean(update))
 
-    def <<(name: String, update: Int): Json = updated(name -> JsNumber(update))
+    def <<(name: String, update: Int): SprayJson = updated(name -> JsNumber(update))
 
-    def <<(name: String, update: Long): Json = updated(name -> JsNumber(update))
+    def <<(name: String, update: Long): SprayJson = updated(name -> JsNumber(update))
 
-    def <<(name: String, update: Double): Json = updated(name -> JsNumber(update))
+    def <<(name: String, update: Double): SprayJson = updated(name -> JsNumber(update))
 
-    def <<(name: String, update: BigInt): Json = updated(name -> JsNumber(update))
+    def <<(name: String, update: BigInt): SprayJson = updated(name -> JsNumber(update))
 
-    def <<(name: String, update: BigDecimal): Json = updated(name -> JsNumber(update))
+    def <<(name: String, update: BigDecimal): SprayJson = updated(name -> JsNumber(update))
 
-    def <<(name: String, update: JsValue): Json = updated(name -> update)
+    def <<(name: String, update: JsValue): SprayJson = updated(name -> update)
 
-    def <<(nameAndValue: (String, JsValue)): Json = updated(nameAndValue._1 -> nameAndValue._2)
+    def <<(nameAndValue: (String, JsValue)): SprayJson = updated(nameAndValue._1 -> nameAndValue._2)
 
-    def <<(name: String, update: Json): Json = updated(name -> update.unwrap)
+    def <<(name: String, update: SprayJson): SprayJson = updated(name -> update.unwrap)
 
     /**
       * Return an updated copy of the JSON, removing `name` from objects if the option is empty.
@@ -144,11 +144,11 @@ object JsonLens {
       * @tparam T Option of
       * @return Json
       */
-    def <<[T: ClassTag: JsonWriter](name: String, option: Option[T]): Json =
+    def <<[T: ClassTag: JsonWriter](name: String, option: Option[T]): SprayJson =
       option map { value =>
         updated((name, implicitly[JsonWriter[T]].write(value)))
       } getOrElse value match {
-        case Some(JsObject(fields)) => Json(JsObject(fields - name))
+        case Some(JsObject(fields)) => SprayJson(JsObject(fields - name))
         case _ => this
       }
 
@@ -161,12 +161,12 @@ object JsonLens {
       * @param encodeNulls Boolean
       * @return Json
       */
-    def <<(name: String, update: Iterable[_], encodeNulls: Boolean = false): Json =
-      updated(name -> Json.array(update, encodeNulls).toJsArray)
+    def <<(name: String, update: Iterable[_], encodeNulls: Boolean = false): SprayJson =
+      updated(name -> SprayJson.array(update, encodeNulls).toJsArray)
 
-    def updated(update: (String, JsValue)): Json =
-      if (value.isEmpty) Json(JsObject(Map(update)))
-      else Json(JsObject(value.get.asJsObject.fields + update))
+    def updated(update: (String, JsValue)): SprayJson =
+      if (value.isEmpty) SprayJson(JsObject(Map(update)))
+      else SprayJson(JsObject(value.get.asJsObject.fields + update))
 
     /**
       * Return an updated copy of the JSON if the option is defined.
@@ -176,7 +176,7 @@ object JsonLens {
       * @tparam T Option of
       * @return Json
       */
-    def <<?[T: ClassTag: JsonWriter](name: String, option: Option[T]): Json =
+    def <<?[T: ClassTag: JsonWriter](name: String, option: Option[T]): SprayJson =
       option map { value =>
         updated(name -> implicitly[JsonWriter[T]].write(value))
       } getOrElse this
@@ -206,18 +206,18 @@ object JsonLens {
     }
   }
 
-  object Json {
-    val empty: Json = new Json(None)
+  object SprayJson {
+    val empty: SprayJson = new SprayJson(None)
 
-    def apply(value: JsValue) = new Json(Some(value))
+    def apply(value: JsValue) = new SprayJson(Some(value))
 
-    def apply(value: Option[JsValue]) = new Json(value)
+    def apply(value: Option[JsValue]) = new SprayJson(value)
 
-    def apply(values: JsField*) = new Json(Some(JsObject(values: _*)))
+    def apply(values: JsField*) = new SprayJson(Some(JsObject(values: _*)))
 
-    def unapply(lens: Json): Option[JsValue] = lens.value
+    def unapply(lens: SprayJson): Option[JsValue] = lens.value
 
-    def array(values: Iterable[_], encodeNulls: Boolean = false): Json = {
+    def array(values: Iterable[_], encodeNulls: Boolean = false): SprayJson = {
       def encodeValue(items: Iterable[_]): JsValue = {
         var fields = Vector.empty[JsField]
         var elements = Vector.empty[JsValue]
@@ -238,7 +238,7 @@ object JsonLens {
     def encode(anyItem: Any): Either[JsField, JsValue] = anyItem match {
       case null | () => Right(JsNull)
       case item: JsValue => Right(item)
-      case item: Json => Right(item.unwrap)
+      case item: SprayJson => Right(item.unwrap)
       case item: (_, _) if item._1.isInstanceOf[String] => Left(item._1.toString -> encode(item._2).right.get)
       case item: Boolean => Right(JsBoolean(item))
       case item: Short => Right(JsNumber(item))

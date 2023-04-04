@@ -4,9 +4,9 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import spray.json.lenses.JsonLenses._
 import org.scalatest.{MustMatchers, WordSpec}
-import parallelai.sot.api.json.JsonLens._
+import parallelai.sot.api.json.SprayJsonLens._
 
-class JsonLensSpec extends WordSpec with MustMatchers {
+class SprayJsonLensSpec extends WordSpec with MustMatchers {
   "Json lenses" should {
     "find an optional field" in {
       val json = JsObject(
