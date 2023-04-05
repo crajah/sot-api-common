@@ -1,6 +1,7 @@
 package parallelai.sot.api.model
 
 import java.net.URI
+
 import io.circe.syntax._
 import org.scalatest.{Inside, MustMatchers, WordSpec}
 import com.github.nscala_time.time.Imports._
@@ -31,16 +32,6 @@ class RegisteredVersionSpec extends WordSpec with MustMatchers with Inside {
       val registeredVersion = RegisteredVersion(uri, version, token, nextDay)
 
       Encrypted(registeredVersion).decrypt mustEqual registeredVersion
-    }
-
-    "define and upload/download file name convention" in {
-      val uri = new URI("http://parallelai.com/registered-version")
-      val version = "v1.0.0"
-      val token = Token("licenceId", "organisationCode", "me@gmail.com")
-      val nextDay = DateTime.nextDay
-      val registeredVersion = RegisteredVersion(uri, version, token, nextDay)
-
-      registeredVersion.defineFileName mustEqual "licenceId-v1.0.0-parallelai-sot.zip"
     }
   }
 }

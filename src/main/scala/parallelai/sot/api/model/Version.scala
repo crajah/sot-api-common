@@ -1,14 +1,15 @@
 package parallelai.sot.api.model
 
 import java.net.URI
+
+import com.github.nscala_time.time.Imports._
 import io.circe._
 import io.circe.syntax._
+import org.apache.commons.lang3.SerializationUtils.{deserialize, serialize}
+import parallelai.common.secure.{FromBytes, ToBytes}
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 import spray.json.lenses.JsonLenses._
-import org.apache.commons.lang3.SerializationUtils.{deserialize, serialize}
-import com.github.nscala_time.time.Imports._
-import parallelai.common.secure.{FromBytes, ToBytes}
 
 case class Version(value: String, token: Option[Token] = None, expiry: Option[DateTime] = None)
 
@@ -81,9 +82,5 @@ object RegisteredVersion {
     token <- c.downField("token").as[Token]
     expiry <- c.downField("expiry").as[String]
   } yield RegisteredVersion(new URI(uri), version, token, DateTime.parse(expiry))
-
-  implicit class GCFileName(registeredVersion: RegisteredVersion) {
-    def defineFileName = s"${registeredVersion.token.id}-${registeredVersion.version}-parallelai-sot.zip"
-  }
 }
 
