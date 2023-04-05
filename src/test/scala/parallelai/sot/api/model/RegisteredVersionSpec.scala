@@ -32,5 +32,15 @@ class RegisteredVersionSpec extends WordSpec with MustMatchers with Inside {
 
       Encrypted(registeredVersion).decrypt mustEqual registeredVersion
     }
+
+    "define and upload/download file name convention" in {
+      val uri = new URI("http://parallelai.com/registered-version")
+      val version = "v1.0.0"
+      val token = Token("licenceId", "organisationCode", "me@gmail.com")
+      val nextDay = DateTime.nextDay
+      val registeredVersion = RegisteredVersion(uri, version, token, nextDay)
+
+      registeredVersion.defineFileName mustEqual "licenceId-v1.0.0-parallelai-sot.zip"
+    }
   }
 }

@@ -81,4 +81,9 @@ object RegisteredVersion {
     token <- c.downField("token").as[Token]
     expiry <- c.downField("expiry").as[String]
   } yield RegisteredVersion(new URI(uri), version, token, DateTime.parse(expiry))
+
+  implicit class GCFileName(registeredVersion: RegisteredVersion) {
+    def defineFileName = s"${registeredVersion.token.id}-${registeredVersion.version}-parallelai-sot.zip"
+  }
 }
+
