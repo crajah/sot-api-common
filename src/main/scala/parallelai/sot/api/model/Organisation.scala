@@ -7,7 +7,7 @@ import javax.crypto.SecretKey
 import org.apache.commons.lang3.SerializationUtils.{deserialize, serialize}
 import parallelai.common.secure.{Encrypted, FromBytes, ToBytes}
 
-case class Organisation(code: String, email: String, token: Option[Encrypted[Token]], secret: Option[SecretKey])
+case class Organisation(id: Option[String], code: String, email: String, token: Option[Encrypted[Token]], secret: Option[SecretKey])
 
 object Organisation {
   implicit val toBytes: ToBytes[Organisation] =
@@ -17,49 +17,25 @@ object Organisation {
     (a: Array[Byte]) => deserialize[Json](a).as[Organisation].right.get
 
   implicit val encoder: Encoder[Organisation] = (organisation: Organisation) => {
-    val json = Json.obj(
+    Json.obj(
+      "id" -> organisation.id.fold(Json.Null)(Json.fromString),
       "code" -> Json.fromString(organisation.code),
-      "email" -> Json.fromString(organisation.email)
-    )
-
-    val token: Option[Json] =
-      organisation.token.map(c => Json.obj("token" -> c.asJson))
-
-    val secret: Option[Json] =
-      organisation.secret.map(secret => Json.obj("secret" -> Json.fromString(getEncoder encodeToString serialize(secret))))
-
-    Seq(token, secret).flatten.foldLeft(json) { (acc, json) => json deepMerge acc }
+      "email" -> Json.fromString(organisation.email),
+      "token" -> organisation.token.fold(Json.Null)(_.asJson),
+      "secret" -> organisation.secret.fold(Json.Null)(secret => Json.fromString(getEncoder encodeToString serialize(secret)))
+    ).mapObject(_.filter {
+      case (_, j) if j.isNull => false
+      case _ => true
+    })
   }
 
   implicit val decoder: Decoder[Organisation] = (c: HCursor) => for {
+    id <- c.downField("id").as[Option[String]]
     code <- c.downField("code").as[String]
     email <- c.downField("email").as[String]
     token <- c.downField("token").as[Option[Encrypted[Token]]]
     secret <- c.downField("secret").as[Option[String]]
-  } yield Organisation(code, email, token, secret.map(s => deserialize[SecretKey](getDecoder decode s)))
-}
-
-case class LicencedOrganisation(id: String, organisation: Organisation, token: Encrypted[Token])
-
-object LicencedOrganisation {
-  implicit val toBytes: ToBytes[LicencedOrganisation] =
-    (licencedOrganisation: LicencedOrganisation) => serialize(licencedOrganisation.asJson)
-
-  implicit val fromBytes: FromBytes[LicencedOrganisation] =
-    (a: Array[Byte]) => deserialize[Json](a).as[LicencedOrganisation].right.get
-
-  implicit val encoder: Encoder[LicencedOrganisation] = (licencedOrganisation: LicencedOrganisation) =>
-    Json.obj(
-      "id" -> Json.fromString(licencedOrganisation.id),
-      "organisation" -> licencedOrganisation.organisation.asJson,
-      "token" -> licencedOrganisation.token.asJson
-    )
-
-  implicit val decoder: Decoder[LicencedOrganisation] = (c: HCursor) => for {
-    id <- c.downField("id").as[String]
-    organisation <- c.downField("organisation").as[Organisation]
-    token <- c.downField("token").as[Encrypted[Token]]
-  } yield LicencedOrganisation(id, organisation, token)
+  } yield Organisation(id, code, email, token, secret.map(s => deserialize[SecretKey](getDecoder decode s)))
 }
 
 case class RegisteredOrganisation(orgSharedSecret: Encrypted[SharedSecret])

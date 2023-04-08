@@ -9,7 +9,7 @@ class OrganisationSpec extends WordSpec with MustMatchers {
 
   "Organisation" should {
     "have token and secret added" in {
-      val organisation = Organisation("code", "email", None, None)
+      val organisation = Organisation(None, "code", "email", None, None)
 
       organisation must have (
         'token (None),
@@ -19,7 +19,7 @@ class OrganisationSpec extends WordSpec with MustMatchers {
       val token = GenLens[Organisation](_.token).set(Option(Encrypted(Token("id", "code", "email"))))
       val secret = GenLens[Organisation](_.secret).set(Option(Crypto.aesSecretKey))
 
-      (token compose secret)(organisation) must matchPattern { case Organisation("code", "email", Some(_), Some(_)) => }
+      (token compose secret)(organisation) must matchPattern { case Organisation(None, "code", "email", Some(_), Some(_)) => }
     }
   }
 }
