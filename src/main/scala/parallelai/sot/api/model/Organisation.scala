@@ -39,6 +39,29 @@ object Organisation {
   } yield Organisation(code, email, token, secret.map(s => deserialize[SecretKey](getDecoder decode s)))
 }
 
+case class LicencedOrganisation(id: String, organisation: Organisation, token: Encrypted[Token])
+
+object LicencedOrganisation {
+  implicit val toBytes: ToBytes[LicencedOrganisation] =
+    (licencedOrganisation: LicencedOrganisation) => serialize(licencedOrganisation.asJson)
+
+  implicit val fromBytes: FromBytes[LicencedOrganisation] =
+    (a: Array[Byte]) => deserialize[Json](a).as[LicencedOrganisation].right.get
+
+  implicit val encoder: Encoder[LicencedOrganisation] = (licencedOrganisation: LicencedOrganisation) =>
+    Json.obj(
+      "id" -> Json.fromString(licencedOrganisation.id),
+      "organisation" -> licencedOrganisation.organisation.asJson,
+      "token" -> licencedOrganisation.token.asJson
+    )
+
+  implicit val decoder: Decoder[LicencedOrganisation] = (c: HCursor) => for {
+    id <- c.downField("id").as[String]
+    organisation <- c.downField("organisation").as[Organisation]
+    token <- c.downField("token").as[Encrypted[Token]]
+  } yield LicencedOrganisation(id, organisation, token)
+}
+
 case class RegisteredOrganisation(orgSharedSecret: Encrypted[SharedSecret])
 
 object RegisteredOrganisation {
