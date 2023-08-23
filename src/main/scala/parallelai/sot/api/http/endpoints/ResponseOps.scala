@@ -5,7 +5,7 @@ import spray.json._
 import com.softwaremill.sttp.{BodySerializer, ResponseAs, StringBody, asString}
 import com.twitter.finagle.http.MediaType
 
-@deprecated(message = "Use parallelai.sot.api.http.ResultOps", since = "17th March 2018")
+//@deprecated(message = "Use parallelai.sot.api.http.ResultOps", since = "17th March 2018")
 trait ResponseOps extends DefaultJsonProtocol {
   implicit val response2String: Response => String =
     _.toJson.prettyPrint
